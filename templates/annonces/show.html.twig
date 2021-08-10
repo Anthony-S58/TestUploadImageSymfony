@@ -13,6 +13,13 @@
 				<td>{{ annonce.id }}</td>
 			</tr>
 			<tr>
+				{% for image in annonce.images %}
+					<div>
+						<img src="{{ asset('/uploads/' ~ image.name) }}" alt="Image" width="150">
+					</div>
+				{% endfor %}
+			</tr>
+			<tr>
 				<th>Title</th>
 				<td>{{ annonce.title }}</td>
 			</tr>
