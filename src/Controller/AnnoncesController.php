@@ -7,6 +7,7 @@ use App\Entity\Images;
 use App\Form\AnnoncesType;
 use App\Repository\AnnoncesRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -88,6 +89,26 @@ class AnnoncesController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            //on récupère les images transmises
+            $images = $form->get('images')->getData();
+
+            //on boucle sur les images
+            foreach ($images as $image) {
+                //on génère un nouveau nom de fichier
+                $fichier = md5(uniqid()) . '.' . $image->guessExtension();
+
+                //on copie le fichier dans le dossier upload
+                $image->move(
+                    $this->getParameter('images_directory'),
+                    $fichier
+                );
+
+                //on stocke l'image dans la base de données (son nom)
+                $img = new Images();
+                $img->setName($fichier);
+                $annonce->addImage($img);
+            }
+
             $this->getDoctrine()->getManager()->flush();
 
             return $this->redirectToRoute('annonces_index', [], Response::HTTP_SEE_OTHER);
@@ -111,5 +132,31 @@ class AnnoncesController extends AbstractController
         }
 
         return $this->redirectToRoute('annonces_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    /**
+     * @Route("/supprime/image/{id}", name="annonces_delete_image", methods={"DELETE"})
+     */
+    public function deleteImage(Images $image, Request $request)
+    {
+        $data = json_decode($request->getContent(), true);
+
+        //on verifie si le token est valide
+        if ($this->isCsrfTokenValid('delete' . $image->getId(), $data['_token'])) {
+            // on récupère le nom ce l'image
+            $nom = $image->getName();
+            //on supprime le fichier
+            unlink($this->getParameter('images_directory') . '/' . $nom);
+
+            //on supprime de la base de données
+            $em = $this->getDoctrine()->getManager();
+            $em->remove($image);
+            $em->flush();
+
+            //on répond en json
+            return new JsonResponse(['success' => 1]);
+        } else {
+            return new JsonResponse(['error' => 'Token Invalide'], 400);
+        }
     }
 }
