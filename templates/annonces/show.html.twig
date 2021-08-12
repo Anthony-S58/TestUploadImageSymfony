@@ -23,6 +23,13 @@
 				<th>Title</th>
 				<td>{{ annonce.title }}</td>
 			</tr>
+			<tr>
+				{% for fichier in annonce.fichiers %}
+					<div>
+						<a href="{{ asset('/uploads/notices/' ~ fichier.name) }}">notice</a>
+					</div>
+				{% endfor %}
+			</tr>
 		</tbody>
 	</table>
 

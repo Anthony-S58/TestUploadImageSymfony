@@ -11,7 +11,7 @@ window.onload = () => {
             e.preventDefault()
 
             // on demande confirmation
-            if(confirm("Voulez-vous upprimer cette image ?")){
+            if(confirm("Voulez-vous supprimer cet élément ?")){
                 // On envoie une requête Ajax vers le href du lien avec la méthode DELETE
                 fetch(this.getAttribute("href"), {
                     method: "DELETE",
@@ -34,4 +34,7 @@ window.onload = () => {
         })
 
     }
-}
+};
+
+
+

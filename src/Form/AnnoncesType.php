@@ -20,7 +20,15 @@ class AnnoncesType extends AbstractType
                 'label' => false,
                 'multiple' => true,
                 'mapped' => false,
-                'required' => false
+                'required' => false,
+            ])
+            // on ajoute le champ "fichiers" dans le formulaire
+            // il n'est pas lié à la base de données (mapped à false)
+            ->add('fichiers', FileType::class, [
+                'label' => 'manuel',
+                'multiple' => true,
+                'mapped' => false,
+                'required' => false,
             ]);
     }
 

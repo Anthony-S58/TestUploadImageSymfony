@@ -11,5 +11,15 @@
 		</div>
 	{% endfor %}
 {% endif %}
+
+{% if app.request.attributes.get('_route') == 'annonces_edit' %}
+	<h2>Fichiers</h2>
+	{% for fichier in annonce.fichiers %}
+		<div>
+			<a href="{{ asset('/uploads/notices/' ~ fichier.name) }}" alt="noticepdf" width="150">notice</a>
+			<a href="{{ path('annonces_delete_fichier', {'id': fichier.id}) }}" data-delete data-token="{{ csrf_token('delete' ~ fichier.id) }}">Supprimer</a>
+		</div>
+	{% endfor %}
+{% endif %}
 <button class="btn">{{ button_label|default('Save') }}</button>
 {{ form_end(form) }}
